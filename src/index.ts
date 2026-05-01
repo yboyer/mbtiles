@@ -32,9 +32,9 @@ type GetTileResponse = {
 export class MBTilesReader {
   private db: Database.Database
 
-  private lastModified: Date
+  private lastModifiedStr: string
 
-  private size: number
+  private etag: string
 
   private getTileStmt: Database.Statement<number[], { tile_data: Buffer }>
 
@@ -56,8 +56,8 @@ export class MBTilesReader {
     this.optimizeReadOnlyConnection()
 
     const infos = statSync(file)
-    this.lastModified = infos.mtime
-    this.size = infos.size
+    this.lastModifiedStr = infos.mtime.toUTCString()
+    this.etag = `${infos.size.toString(36)}-${infos.mtime.getTime().toString(36)}`
 
     this.getTileStmt = this.db.prepare<number[], { tile_data: Buffer }>(
       'SELECT tile_data FROM tiles WHERE zoom_level = ? AND tile_column = ? AND tile_row = ?'
@@ -202,8 +202,8 @@ export class MBTilesReader {
       data: res.tile_data,
       headers: {
         ...headers,
-        'Last-Modified': this.lastModified.toISOString(),
-        ETag: `${this.size}-${this.lastModified.getTime()}`,
+        'Last-Modified': this.lastModifiedStr,
+        ETag: this.etag,
       },
     }
   }
