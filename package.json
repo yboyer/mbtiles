@@ -4,8 +4,9 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
+    "build": "tsc --p . -d && tsc-alias",
     "lint": "biome check .",
-    "build": "tsc --p . -d && tsc-alias"
+    "prepublishOnly": "npm run build"
   },
   "keywords": [],
   "author": "",
