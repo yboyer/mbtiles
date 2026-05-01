@@ -53,6 +53,8 @@ export class MBTilesReader {
       fileMustExist: true,
     })
 
+    this.optimizeReadOnlyConnection()
+
     const infos = statSync(file)
     this.lastModified = infos.mtime
     this.size = infos.size
@@ -63,6 +65,19 @@ export class MBTilesReader {
     this.getInfosStmt = this.db.prepare<[], { name: string; value: string }>(
       'SELECT name, value FROM metadata'
     )
+  }
+
+  private optimizeReadOnlyConnection(): void {
+    // Best-effort tuning for read-heavy workloads.
+    try {
+      this.db.pragma('cache_size = -65536')
+      this.db.pragma('mmap_size = 1073741824')
+      this.db.pragma('temp_store = MEMORY')
+      this.db.pragma('journal_mode = OFF')
+      this.db.pragma('synchronous = OFF')
+    } catch {
+      // no-op
+    }
   }
 
   /** Closes the underlying SQLite database connection. */
