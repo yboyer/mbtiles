@@ -23,6 +23,17 @@ type GetTileResponse = {
   }
 }
 
+type TileHeaders = GetTileResponse['headers']
+
+type TileFormatHeaders = {
+  png: TileHeaders
+  jpeg: TileHeaders
+  gif: TileHeaders
+  webp: TileHeaders
+  pbfDeflate: TileHeaders
+  pbfGzip: TileHeaders
+}
+
 /**
  * Reads tiles and metadata from an MBTiles SQLite file.
  *
@@ -36,7 +47,9 @@ export class MBTilesReader {
 
   private etag: string
 
-  private getTileStmt: Database.Statement<number[], { tile_data: Buffer }>
+  private getTileStmt: Database.Statement<number[], Buffer>
+
+  private tileFormatHeaders: TileFormatHeaders
 
   private getInfosStmt: Database.Statement<[], { name: string; value: string }>
 
@@ -58,10 +71,13 @@ export class MBTilesReader {
     const infos = statSync(file)
     this.lastModifiedStr = infos.mtime.toUTCString()
     this.etag = `${infos.size.toString(36)}-${infos.mtime.getTime().toString(36)}`
+    this.tileFormatHeaders = this.buildTileFormatHeaders()
 
-    this.getTileStmt = this.db.prepare<number[], { tile_data: Buffer }>(
-      'SELECT tile_data FROM tiles WHERE zoom_level = ? AND tile_column = ? AND tile_row = ?'
-    )
+    this.getTileStmt = this.db
+      .prepare<number[], Buffer>(
+        'SELECT tile_data FROM tiles WHERE zoom_level = ? AND tile_column = ? AND tile_row = ?'
+      )
+      .pluck()
     this.getInfosStmt = this.db.prepare<[], { name: string; value: string }>(
       'SELECT name, value FROM metadata'
     )
@@ -98,10 +114,53 @@ export class MBTilesReader {
     reader.close()
   }
 
-  private headers(buffer: Buffer): {
-    'Content-Type': string
-    'Content-Encoding'?: string
-  } {
+  private buildTileFormatHeaders(): TileFormatHeaders {
+    const commonHeaders = {
+      'Last-Modified': this.lastModifiedStr,
+      ETag: this.etag,
+    }
+
+    return {
+      png: {
+        'Content-Type': 'image/png',
+        ...commonHeaders,
+      },
+      jpeg: {
+        'Content-Type': 'image/jpeg',
+        ...commonHeaders,
+      },
+      gif: {
+        'Content-Type': 'image/gif',
+        ...commonHeaders,
+      },
+      webp: {
+        'Content-Type': 'image/webp',
+        ...commonHeaders,
+      },
+      pbfDeflate: {
+        'Content-Type': 'application/x-protobuf',
+        'Content-Encoding': 'deflate',
+        ...commonHeaders,
+      },
+      pbfGzip: {
+        'Content-Type': 'application/x-protobuf',
+        'Content-Encoding': 'gzip',
+        ...commonHeaders,
+      },
+    }
+  }
+
+  private headers(buffer: Buffer): TileHeaders {
+    // gzip: most common for vector tiles in MBTiles.
+    if (buffer[0] === 0x1f && buffer[1] === 0x8b) {
+      return this.tileFormatHeaders.pbfGzip
+    }
+
+    // deflate: assumes PBF payload.
+    if (buffer[0] === 0x78 && buffer[1] === 0x9c) {
+      return this.tileFormatHeaders.pbfDeflate
+    }
+
     if (
       buffer[0] === 0x89 &&
       buffer[1] === 0x50 &&
@@ -112,19 +171,16 @@ export class MBTilesReader {
       buffer[6] === 0x1a &&
       buffer[7] === 0x0a
     ) {
-      return {
-        'Content-Type': 'image/png',
-      }
+      return this.tileFormatHeaders.png
     }
+
     if (
       buffer[0] === 0xff &&
       buffer[1] === 0xd8 &&
       buffer[buffer.length - 2] === 0xff &&
       buffer[buffer.length - 1] === 0xd9
     ) {
-      return {
-        'Content-Type': 'image/jpeg',
-      }
+      return this.tileFormatHeaders.jpeg
     }
 
     if (
@@ -135,9 +191,7 @@ export class MBTilesReader {
       (buffer[4] === 0x39 || buffer[4] === 0x37) &&
       buffer[5] === 0x61
     ) {
-      return {
-        'Content-Type': 'image/gif',
-      }
+      return this.tileFormatHeaders.gif
     }
 
     if (
@@ -150,25 +204,7 @@ export class MBTilesReader {
       buffer[10] === 0x42 &&
       buffer[11] === 0x50
     ) {
-      return {
-        'Content-Type': 'image/webp',
-      }
-    }
-
-    // deflate: recklessly assumes contents are PBF.
-    if (buffer[0] === 0x78 && buffer[1] === 0x9c) {
-      return {
-        'Content-Type': 'application/x-protobuf',
-        'Content-Encoding': 'deflate',
-      }
-    }
-
-    // gzip: recklessly assumes contents are PBF.
-    if (buffer[0] === 0x1f && buffer[1] === 0x8b) {
-      return {
-        'Content-Type': 'application/x-protobuf',
-        'Content-Encoding': 'gzip',
-      }
+      return this.tileFormatHeaders.webp
     }
 
     throw new Error('Unsupported tile format')
@@ -190,21 +226,17 @@ export class MBTilesReader {
     // biome-ignore lint/suspicious/noBitwiseOperators: ok
     const newY = (1 << z) - 1 - y
 
-    const res = this.getTileStmt.get(z, x, newY)
+    const tile = this.getTileStmt.get(z, x, newY)
 
-    if (!res?.tile_data || !Buffer.isBuffer(res.tile_data)) {
+    if (!tile) {
       return null
     }
 
-    const headers = this.headers(res.tile_data)
+    const headers = this.headers(tile)
 
     return {
-      data: res.tile_data,
-      headers: {
-        ...headers,
-        'Last-Modified': this.lastModifiedStr,
-        ETag: this.etag,
-      },
+      data: tile,
+      headers,
     }
   }
 
