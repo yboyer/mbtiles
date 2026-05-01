@@ -25,6 +25,9 @@ if (tile) {
 // Retrieve metadata
 const info = reader.getInfos()
 console.log(info) // { scheme, minzoom, maxzoom, center, bounds, ... }
+
+// Always close the reader when done
+reader.close()
 ```
 
 ## API
@@ -37,6 +40,12 @@ Opens an MBTiles SQLite file in read-only mode.
 |-----------|-----------|------------------------------------------|
 | `file`    | `string`  | Path to the `.mbtiles` file              |
 | `debug`   | `boolean` | Enable verbose SQLite logging (optional) |
+
+Throws if the file does not exist or cannot be opened as a SQLite database.
+
+### `close(): void`
+
+Closes the underlying SQLite database connection. Always call this when done with the reader.
 
 ### `getTile(z, x, y): GetTileResponse | null`
 
@@ -54,8 +63,8 @@ Supported tile formats: PNG, JPEG, GIF, WebP, PBF (gzip / deflate compressed).
   headers: {
     'Content-Type': string
     'Content-Encoding'?: string   // 'gzip' | 'deflate' for PBF tiles
-    'Last-Modified'?: string
-    ETag?: string
+    'Last-Modified': string
+    ETag: string
   }
 }
 ```
@@ -63,6 +72,8 @@ Supported tile formats: PNG, JPEG, GIF, WebP, PBF (gzip / deflate compressed).
 ### `getInfos(): Info | null`
 
 Returns the metadata stored in the MBTiles file, or `null` if empty.
+
+The `json` metadata key is parsed and merged at the top level. `minzoom`/`maxzoom` are cast to integers; `center`/`bounds` to number arrays.
 
 ```ts
 {
@@ -77,7 +88,7 @@ Returns the metadata stored in the MBTiles file, or `null` if empty.
 
 ### `MBTilesReader.checkFile(file)`
 
-Static helper that opens the file and throws if it is invalid or missing.
+Static helper that opens the file and throws if it is invalid or missing. The connection is closed automatically after the check.
 
 ## Development
 

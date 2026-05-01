@@ -1,4 +1,4 @@
-import { stat } from 'node:fs'
+import { statSync } from 'node:fs'
 
 import Database from 'better-sqlite3'
 
@@ -23,14 +23,29 @@ type GetTileResponse = {
   }
 }
 
+/**
+ * Reads tiles and metadata from an MBTiles SQLite file.
+ *
+ * Prepared statements are cached at construction time for optimal performance.
+ * Call {@link close} when done to release the database connection.
+ */
 export class MBTilesReader {
   private db: Database.Database
 
-  private lastModified?: Date
+  private lastModified: Date
 
-  private size?: number
+  private size: number
 
-  constructor(file: string, debug = false) {
+  private getTileStmt: Database.Statement<number[], { tile_data: Buffer }>
+
+  private getInfosStmt: Database.Statement<[], { name: string; value: string }>
+
+  /**
+   * @param file - Absolute or relative path to the `.mbtiles` file.
+   * @param debug - When `true`, logs all SQL statements to `console.debug`.
+   * @throws If the file does not exist or cannot be opened as a SQLite database.
+   */
+  constructor(file: string, debug?: boolean) {
     this.db = new Database(file, {
       // biome-ignore lint/suspicious/noConsole: fallback
       verbose: debug ? console.debug : undefined,
@@ -38,16 +53,32 @@ export class MBTilesReader {
       fileMustExist: true,
     })
 
-    stat(file, (err, infos) => {
-      if (err) throw err
+    const infos = statSync(file)
+    this.lastModified = infos.mtime
+    this.size = infos.size
 
-      this.lastModified = infos.mtime
-      this.size = infos.size
-    })
+    this.getTileStmt = this.db.prepare<number[], { tile_data: Buffer }>(
+      'SELECT tile_data FROM tiles WHERE zoom_level = ? AND tile_column = ? AND tile_row = ?'
+    )
+    this.getInfosStmt = this.db.prepare<[], { name: string; value: string }>(
+      'SELECT name, value FROM metadata'
+    )
   }
 
+  /** Closes the underlying SQLite database connection. */
+  close(): void {
+    this.db.close()
+  }
+
+  /**
+   * Verifies that `file` is a valid, readable MBTiles database.
+   * Throws if the file is missing, unreadable, or not a valid SQLite file.
+   *
+   * @param file - Path to the `.mbtiles` file to validate.
+   */
   static checkFile(file: string): void {
-    new MBTilesReader(file)
+    const reader = new MBTilesReader(file)
+    reader.close()
   }
 
   private headers(buffer: Buffer): {
@@ -127,25 +158,22 @@ export class MBTilesReader {
   }
 
   /**
-   * Retrieves a tile from the MBTiles file based on the provided zoom level (z), x, and y coordinates.
+   * Retrieves a tile from the MBTiles file.
    *
-   * @param z - The zoom level of the tile to retrieve.
-   * @param x - The x coordinate of the tile to retrieve.
-   * @param y - The y coordinate of the tile to retrieve.
-   * @returns An object containing the tile data as a Buffer and the appropriate headers, or null if the tile is not found or is in an unsupported format.
-   * @throws An error if the tile format is unsupported or if there is an issue with the database query.
+   * The Y coordinate is automatically flipped from XYZ to TMS convention.
+   *
+   * @param z - Zoom level.
+   * @param x - Tile column.
+   * @param y - Tile row (XYZ convention, flipped internally to TMS).
+   * @returns The tile data and HTTP-ready headers, or `null` if the tile does not exist.
+   * @throws If the tile format is not recognised (not PNG, JPEG, GIF, WebP, or PBF).
    */
   getTile(z: number, x: number, y: number): GetTileResponse | null {
     // Flip Y coordinate because MBTiles files are TMS.
     // biome-ignore lint/suspicious/noBitwiseOperators: ok
     const newY = (1 << z) - 1 - y
 
-    const sql =
-      'SELECT tile_data FROM tiles WHERE zoom_level = ? AND tile_column = ? AND tile_row = ?'
-
-    const query = this.db.prepare<number[], { tile_data: Buffer }>(sql)
-
-    const res = query.get(z, x, newY)
+    const res = this.getTileStmt.get(z, x, newY)
 
     if (!res?.tile_data || !Buffer.isBuffer(res.tile_data)) {
       return null
@@ -157,18 +185,22 @@ export class MBTilesReader {
       data: res.tile_data,
       headers: {
         ...headers,
-        'Last-Modified': this.lastModified?.toISOString(),
-        ETag: `${this.size}-${this.lastModified?.getTime()}`,
+        'Last-Modified': this.lastModified.toISOString(),
+        ETag: `${this.size}-${this.lastModified.getTime()}`,
       },
     }
   }
 
+  /**
+   * Returns the metadata stored in the MBTiles `metadata` table.
+   *
+   * The `json` metadata key is parsed and merged at the top level.
+   * `minzoom`/`maxzoom` are cast to integers; `center`/`bounds` to number arrays.
+   *
+   * @returns A metadata object, or `null` if the table is empty.
+   */
   getInfos(): Info | null {
-    const query = this.db.prepare<[], { name: string; value: string }>(
-      'SELECT name, value FROM metadata'
-    )
-
-    const rows = query.all()
+    const rows = this.getInfosStmt.all()
 
     if (!rows || rows.length === 0) {
       return null
