@@ -1,6 +1,12 @@
 {
   "name": "@yboyer/mbtiles",
   "version": "1.0.1",
+  "description": "",
+  "homepage": "https://github.com/yboyer/mbtiles",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:yboyer/mbtiles.git"
+  },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
@@ -12,9 +18,7 @@
     "dist"
   ],
   "keywords": [],
-  "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "better-sqlite3": "12.9.0"
   },
