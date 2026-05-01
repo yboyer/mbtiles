@@ -75,6 +75,8 @@ export class MBTilesReader {
       this.db.pragma('temp_store = MEMORY')
       this.db.pragma('journal_mode = OFF')
       this.db.pragma('synchronous = OFF')
+      this.db.pragma('locking_mode = EXCLUSIVE')
+      this.db.pragma('query_only = true')
     } catch {
       // no-op
     }
