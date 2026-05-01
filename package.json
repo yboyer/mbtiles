@@ -5,7 +5,7 @@
   "homepage": "https://github.com/yboyer/mbtiles",
   "repository": {
     "type": "git",
-    "url": "git@github.com:yboyer/mbtiles.git"
+    "url": "git+ssh://git@github.com/yboyer/mbtiles.git"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
