@@ -8,6 +8,9 @@
     "lint": "biome check .",
     "prepublishOnly": "npm run build"
   },
+  "files": [
+    "dist"
+  ],
   "keywords": [],
   "author": "",
   "license": "ISC",
