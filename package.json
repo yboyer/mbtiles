@@ -31,7 +31,7 @@
     "@yboyer/mbtiles": "file:.",
     "pmtiles": "4.4.1",
     "tinybench": "6.0.0",
-    "tsc-alias": "1.8.16",
+    "tsc-alias": "1.8.17",
     "typescript": "6.0.3"
   }
 }
