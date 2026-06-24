@@ -8,26 +8,21 @@ on:
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: write
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@v7.0.0
+      - uses: actions/setup-node@v6.4.0
         with:
-          node-version: "24.16.0"
-          registry-url: "https://registry.npmjs.org"
+          node-version-file: '.nvmrc'
+          cache: npm
       - run: npm ci
       - run: npm run build
       - run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: ⚙️ Generate release infos
         id: release
         run: |
           echo "release_tag=$(echo ${{ github.event.head_commit.message }} | grep -o 'v\(.*\)')" >> $GITHUB_OUTPUT
       - name: 🔖 Release
-        uses: softprops/action-gh-release@v3
+        uses: softprops/action-gh-release@v3.0.1
         with:
           tag_name: ${{ steps.release.outputs.release_tag }}
           name: ${{ steps.release.outputs.release_tag }}
