@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",
-    "@yboyer/config": "1.4.2",
+    "@yboyer/config": "1.4.3",
     "@yboyer/mbtiles": "file:.",
     "pmtiles": "^4.4.1",
     "tinybench": "^6.0.2",
