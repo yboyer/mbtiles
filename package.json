@@ -26,7 +26,7 @@
     "better-sqlite3": "13.0.3"
   },
   "devDependencies": {
-    "@types/better-sqlite3": "7.6.13",
+    "@types/better-sqlite3": "9.6.0",
     "@yboyer/config": "1.4.4",
     "@yboyer/mbtiles": "file:.",
     "pmtiles": "4.5.0",
