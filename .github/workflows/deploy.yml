@@ -1,4 +1,4 @@
-name: Build and deploy
+name: Deploy
 
 on:
   push:
@@ -16,6 +16,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+      - run: npm run test
       - run: npm publish --provenance --access public
       - name: ⚙️ Generate release infos
         id: release
