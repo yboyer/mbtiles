@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
-      - uses: yboyer/actions/npm-release-prepare@v1.0.0
+      - uses: yboyer/actions/npm-release-prepare@6f38a269351e4e79aab465511b29bb249ee8fad8 # v1.0.0
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -47,7 +47,7 @@ jobs:
       - run: npm ci
       - run: npm run build
       - id: publish
-        uses: yboyer/actions/npm-release-publish@v1.0.0
+        uses: yboyer/actions/npm-release-publish@6f38a269351e4e79aab465511b29bb249ee8fad8 # v1.0.0
       - name: 🔖 Release
         if: steps.publish.outputs.published == 'true'
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
