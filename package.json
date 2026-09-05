@@ -30,7 +30,7 @@
   "devDependencies": {
     "@types/better-sqlite3": "9.6.0",
     "@vitest/coverage-v8": "4.1.11",
-    "@yboyer/config": "1.4.5",
+    "@yboyer/config": "1.4.7",
     "@yboyer/mbtiles": "file:.",
     "pmtiles": "4.5.0",
     "tinybench": "6.1.4",
