@@ -22,7 +22,7 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: yboyer/actions/npm-bump-version@77fa8173e9a31d1be7cd7d613c95499ff52a33e3 # v1.1.0
+      - uses: yboyer/actions/npm-bump-version@bdee153c4c32daddb38e4849726db49152fb34bd # v1.2.0
         with:
           release-type: ${{ inputs.release_type }}
 
@@ -43,7 +43,7 @@ jobs:
       - run: npm ci
       - run: npm run build
       - id: publish
-        uses: yboyer/actions/npm-release-publish@6f38a269351e4e79aab465511b29bb249ee8fad8 # v1.0.0
+        uses: yboyer/actions/npm-release-publish@bdee153c4c32daddb38e4849726db49152fb34bd # v1.2.0
       - name: 🔖 Release
         if: steps.publish.outputs.published == 'true'
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
