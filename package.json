@@ -33,7 +33,7 @@
     "@yboyer/config": "1.5.1",
     "@yboyer/mbtiles": "file:.",
     "pmtiles": "4.5.0",
-    "tinybench": "6.1.6",
+    "tinybench": "6.2.0",
     "tsc-alias": "1.9.4",
     "typescript": "7.0.2",
     "vitest": "5.0.0"
