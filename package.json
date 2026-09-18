@@ -29,13 +29,13 @@
   },
   "devDependencies": {
     "@types/better-sqlite3": "9.6.0",
-    "@vitest/coverage-v8": "5.0.0",
+    "@vitest/coverage-v8": "5.0.1",
     "@yboyer/config": "1.5.2",
     "@yboyer/mbtiles": "file:.",
     "pmtiles": "4.5.0",
     "tinybench": "6.2.0",
     "tsc-alias": "1.9.5",
     "typescript": "7.0.2",
-    "vitest": "5.0.0"
+    "vitest": "5.0.1"
   }
 }
