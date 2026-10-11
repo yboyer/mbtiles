@@ -25,6 +25,6 @@ jobs:
           node-version-file: '.node-version'
       - run: npm ci
       - run: npm run build
-      - run: npx --yes --package=semantic-release@25.0.1 --package=@semantic-release/git@11.0.1 semantic-release
+      - run: npx --yes --package=semantic-release@25.0.9 --package=@semantic-release/git@11.0.1 semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
