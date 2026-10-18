@@ -13,11 +13,11 @@
     "benchmark": "npm run benchmark:prepare && npm run benchmark:run",
     "benchmark:prepare": "node ./benchmark/scripts/prepare-assets.mjs",
     "benchmark:run": "node ./benchmark/read-tiles.mjs",
-    "build": "tsc --p . -d && tsc-alias",
-    "lint": "biome check .",
+    "build": "vp pack",
+    "lint": "vp check",
     "prepublishOnly": "npm run build",
-    "test": "vitest run --coverage",
-    "ts:check": "tsc --noEmit"
+    "test": "vp test",
+    "prepare": "vp config"
   },
   "files": [
     "dist"
@@ -28,16 +28,18 @@
     "better-sqlite3": "13.0.3"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.15",
     "@tsconfig/node24": "24.0.5",
     "@types/better-sqlite3": "9.6.0",
     "@vitest/coverage-v8": "5.0.4",
-    "@yboyer/config": "1.5.2",
+    "@yboyer/config": "2.1.0",
     "@yboyer/mbtiles": "file:.",
     "pmtiles": "4.5.0",
     "tinybench": "6.2.2",
-    "tsc-alias": "1.9.7",
     "typescript": "7.0.2",
+    "vite-plus": "1.2.0"
+  },
+  "overrides": {
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.2.0",
     "vitest": "5.0.4"
   }
 }

@@ -18,7 +18,7 @@ const reader = new MBTilesReader('/path/to/file.mbtiles')
 // Retrieve a tile
 const tile = reader.getTile(z, x, y)
 if (tile) {
-  console.log(tile.data)    // Buffer
+  console.log(tile.data) // Buffer
   console.log(tile.headers) // Content-Type, Content-Encoding, ETag, Last-Modified
 }
 
@@ -37,7 +37,7 @@ reader.close()
 Opens an MBTiles SQLite file in read-only mode.
 
 | Parameter | Type      | Description                              |
-|-----------|-----------|------------------------------------------|
+| --------- | --------- | ---------------------------------------- |
 | `file`    | `string`  | Path to the `.mbtiles` file              |
 | `debug`   | `boolean` | Enable verbose SQLite logging (optional) |
 
@@ -93,8 +93,10 @@ Static helper that opens the file and throws if it is invalid or missing. The co
 ## Development
 
 ```sh
-npm run build   # Compile TypeScript
-npm run lint    # Lint with Biome
+vp install
+vp check       # Format, lint, and type check
+vp run test    # Run tests with coverage
+vp run build   # Bundle the library and generate TypeScript declarations
 ```
 
 ## License
