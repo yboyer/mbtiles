@@ -19,7 +19,7 @@ const assets = {
 }
 
 function failMissingAssets(error) {
-  if (error && error.code === 'ENOENT') {
+  if (error?.code === 'ENOENT') {
     throw new Error(
       'Benchmark assets are missing. Run "npm run prepare-assets" before "npm run benchmark".'
     )
