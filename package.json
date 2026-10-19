@@ -30,7 +30,7 @@
   "devDependencies": {
     "@tsconfig/node24": "24.0.5",
     "@types/better-sqlite3": "9.6.0",
-    "@vitest/coverage-v8": "5.0.4",
+    "@vitest/coverage-v8": "5.0.5",
     "@yboyer/config": "2.1.0",
     "@yboyer/mbtiles": "file:.",
     "pmtiles": "4.5.0",
@@ -40,6 +40,6 @@
   },
   "overrides": {
     "vite": "npm:@voidzero-dev/vite-plus-core@1.2.0",
-    "vitest": "5.0.4"
+    "vitest": "5.0.5"
   }
 }
