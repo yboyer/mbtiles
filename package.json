@@ -31,7 +31,7 @@
     "@tsconfig/node24": "24.0.5",
     "@types/better-sqlite3": "9.6.0",
     "@vitest/coverage-v8": "5.0.4",
-    "@yboyer/config": "2.1.0",
+    "@yboyer/config": "2.1.2",
     "@yboyer/mbtiles": "file:.",
     "pmtiles": "4.5.0",
     "tinybench": "6.2.2",
