@@ -92,12 +92,29 @@ Static helper that opens the file and throws if it is invalid or missing. The co
 
 ## Development
 
+Use the Node.js version in `.node-version` and npm with `package-lock.json`.
+
 ```sh
-vp install
-vp check       # Format, lint, and type check
-vp run test    # Run tests with coverage
-vp run build   # Bundle the library and generate TypeScript declarations
+npm ci
+npm run lint    # Check formatting, lint, and types
+npm test        # Run tests with 100% coverage thresholds
+npm run build   # Bundle the library and generate TypeScript declarations
 ```
+
+The project uses standalone tsdown, Biome, TypeScript, and Vitest. No Git hooks are installed.
+The CI runs checks, the build, and tests through the same npm scripts.
+`prepublishOnly` still builds the library before publication.
+
+Biome extends the published `@yboyer/config/biome.json` configuration. Its rules are
+not an exact replacement for the previous Oxlint rules and ESLint plugins.
+TypeScript checks the library, tests, and tool configurations separately.
+Biome respects Git ignore files and skips known lockfiles automatically.
+It allows console output in benchmarks. It does not check Markdown or shell files.
+
+The build preserves CommonJS `dist/index.js`, `dist/index.d.ts`, and both source maps.
+The native `better-sqlite3` dependency remains external to the bundle.
+Build options follow the [tsdown documentation](https://tsdown.dev/options/output-format);
+check and fix options follow the [Biome CLI documentation](https://biomejs.dev/reference/cli/).
 
 ## License
 

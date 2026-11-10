@@ -13,11 +13,10 @@
     "benchmark": "npm run benchmark:prepare && npm run benchmark:run",
     "benchmark:prepare": "node ./benchmark/scripts/prepare-assets.mjs",
     "benchmark:run": "node ./benchmark/read-tiles.mjs",
-    "build": "vp pack",
-    "lint": "vp check",
+    "build": "tsdown",
+    "lint": "biome check --error-on-warnings . && tsc --noEmit",
     "prepublishOnly": "npm run build",
-    "test": "vp test",
-    "prepare": "vp config"
+    "test": "vitest run"
   },
   "files": [
     "dist"
@@ -36,11 +35,8 @@
     "pmtiles": "4.5.0",
     "tinybench": "6.2.3",
     "typescript": "7.0.2",
-    "vite-plus": "1.5.0",
-    "vitest": "5.1.0"
-  },
-  "overrides": {
-    "vite": "npm:@voidzero-dev/vite-plus-core@1.5.0",
-    "vitest": "5.1.0"
+    "vitest": "5.1.0",
+    "@biomejs/biome": "2.6.6",
+    "tsdown": "0.23.7"
   }
 }
