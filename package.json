@@ -36,11 +36,11 @@
     "pmtiles": "4.5.0",
     "tinybench": "6.2.3",
     "typescript": "7.0.2",
-    "vite-plus": "1.5.0",
+    "vite-plus": "1.5.1",
     "vitest": "5.1.0"
   },
   "overrides": {
-    "vite": "npm:@voidzero-dev/vite-plus-core@1.5.0",
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.5.1",
     "vitest": "5.1.0"
   }
 }
