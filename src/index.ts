@@ -60,7 +60,7 @@ export class MBTilesReader {
    */
   constructor(file: string, debug?: boolean) {
     this.db = new Database(file, {
-      // oxlint-disable-next-line no-console -- Allow console.debug for SQL statement logging
+      // biome-ignore lint/suspicious/noConsole: Allow console.debug for SQL statement logging
       verbose: debug ? console.debug : undefined,
       readonly: true,
       fileMustExist: true,
@@ -223,7 +223,7 @@ export class MBTilesReader {
    */
   getTile(z: number, x: number, y: number): GetTileResponse | null {
     // Flip Y coordinate because MBTiles files are TMS.
-    // oxlint-disable-next-line no-bitwise -- Flipping Y coordinate for TMS convention
+    // biome-ignore lint/suspicious/noBitwiseOperators: Flipping Y coordinate for TMS convention
     const newY = (1 << z) - 1 - y
 
     const tile = this.getTileStmt.get(z, x, newY)
