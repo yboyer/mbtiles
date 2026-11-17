@@ -25,7 +25,7 @@
   "keywords": [],
   "license": "ISC",
   "dependencies": {
-    "better-sqlite3": "13.0.3"
+    "better-sqlite3": "13.1.1"
   },
   "devDependencies": {
     "@tsconfig/node26": "26.0.2",
