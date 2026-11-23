@@ -27,17 +27,16 @@
     "better-sqlite3": "13.2.0"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.6.8",
     "@tsconfig/node26": "26.0.2",
     "@types/better-sqlite3": "9.6.0",
     "@vitest/coverage-v8": "5.1.1",
     "@yboyer/config": "2.4.0",
     "@yboyer/mbtiles": "file:.",
-    "@yboyer/semantic-release-config": "1.0.0",
     "pmtiles": "4.5.0",
     "tinybench": "6.2.4",
-    "tsdown": "0.23.7",
     "typescript": "7.0.2",
-    "vitest": "5.1.1"
+    "vitest": "5.1.1",
+    "@biomejs/biome": "2.6.8",
+    "tsdown": "0.23.7"
   }
 }
