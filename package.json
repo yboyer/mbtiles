@@ -35,7 +35,6 @@
     "@yboyer/mbtiles": "file:.",
     "@yboyer/semantic-release-config": "1.0.0",
     "pmtiles": "4.5.0",
-    "semantic-release": "26.0.1",
     "tinybench": "6.2.4",
     "tsdown": "0.23.7",
     "typescript": "7.0.2",
